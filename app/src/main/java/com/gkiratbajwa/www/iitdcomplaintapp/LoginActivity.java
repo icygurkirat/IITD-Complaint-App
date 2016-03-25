@@ -1,7 +1,9 @@
 package com.gkiratbajwa.www.iitdcomplaintapp;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.view.View;
 
 import com.android.volley.RequestQueue;
 
@@ -23,5 +25,14 @@ public class LoginActivity extends AppCompatActivity {
                 ((addr >>>= 8) & 0xFF) + "." +
                 ((addr >>>= 8) & 0xFF) + "." +
                 ((addr >>>= 8) & 0xFF));
+    }
+
+    public void signupUser(View view){
+        Intent intent=new Intent(getApplicationContext(),SignupActivity.class);
+        startActivity(intent);
+    }
+
+    public void loginUser(View view){
+
     }
 }
