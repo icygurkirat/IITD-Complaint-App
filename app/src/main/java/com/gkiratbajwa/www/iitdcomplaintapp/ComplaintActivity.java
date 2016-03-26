@@ -1,9 +1,20 @@
 // This is the Java file that holds the tabs
 package com.gkiratbajwa.www.iitdcomplaintapp;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
+import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.DhcpInfo;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NotificationCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -19,8 +30,20 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class ComplaintActivity extends AppCompatActivity {
+
+    String firstname,username;
+    int id,hostelId,verified,type;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -65,6 +88,13 @@ public class ComplaintActivity extends AppCompatActivity {
             }
         });
 
+        SharedPreferences userData = getApplication().getSharedPreferences("profileData", MODE_PRIVATE);
+        firstname=userData.getString("firstname","");
+        username=userData.getString("username","");
+        id=userData.getInt("id",-1);
+        hostelId=userData.getInt("hostelId",-1);
+        type=userData.getInt("type",-1);
+        verified=userData.getInt("verified",-1);
     }
 
 
@@ -170,6 +200,53 @@ public class ComplaintActivity extends AppCompatActivity {
                     return "Resolved";
             }
             return null;
+        }
+    }
+
+    public void logoutUser(View view)
+    {
+        final ComplaintAppApplication complaintAppApplication = (ComplaintAppApplication) getApplicationContext();
+        RequestQueue mqueue = complaintAppApplication.getmRequestQueue();
+
+        final WifiManager manager = (WifiManager) getSystemService(WIFI_SERVICE);
+        final DhcpInfo dhcp = manager.getDhcpInfo();
+        final String gateway = LoginActivity.intToIp(dhcp.gateway);
+        String URL = "http://" + gateway + ":8000";
+
+        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo network = cm.getActiveNetworkInfo();
+        boolean isConnected = network != null && network.isConnectedOrConnecting();
+
+        if (isConnected) {
+            //Checking for notifications
+            CustomJsonRequest request = new CustomJsonRequest(URL + "/default/logout.json", null
+                    , new Response.Listener<String>() {
+                @Override
+                //Parse LOGIN
+                public void onResponse(String response1) {
+                    try {
+                        JSONObject response=new JSONObject(response1);
+                        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+
+                    } catch (JSONException e) {
+                        Toast.makeText(getApplicationContext(), e.getMessage() + "*", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            }
+                    , new Response.ErrorListener() {
+                @Override
+                //Handle Errors
+                public void onErrorResponse(VolleyError volleyError) {
+                    Toast.makeText(getApplicationContext(), gateway + volleyError.getMessage()+"/", Toast.LENGTH_SHORT).show();
+
+                }
+            });
+            request.setTag("logoutRequest");
+
+            mqueue.add(request);
         }
     }
 }
