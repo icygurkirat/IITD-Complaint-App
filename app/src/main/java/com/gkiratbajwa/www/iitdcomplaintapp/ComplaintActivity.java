@@ -1,6 +1,7 @@
 // This is the Java file that holds the tabs
 package com.gkiratbajwa.www.iitdcomplaintapp;
 
+import android.app.DialogFragment;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
@@ -217,21 +218,25 @@ public class ComplaintActivity extends AppCompatActivity {
         NetworkInfo network = cm.getActiveNetworkInfo();
         boolean isConnected = network != null && network.isConnectedOrConnecting();
 
-        if (isConnected) {
+        if (isConnected)
+        {
             //Checking for notifications
             CustomJsonRequest request = new CustomJsonRequest(URL + "/default/logout.json", null
                     , new Response.Listener<String>() {
                 @Override
                 //Parse LOGIN
-                public void onResponse(String response1) {
-                    try {
+                public void onResponse(String response1)
+                {
+                    try
+                    {
                         JSONObject response=new JSONObject(response1);
                         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
 
-                    } catch (JSONException e) {
+                    }
+                    catch (JSONException e) {
                         Toast.makeText(getApplicationContext(), e.getMessage() + "*", Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -247,6 +252,11 @@ public class ComplaintActivity extends AppCompatActivity {
             request.setTag("logoutRequest");
 
             mqueue.add(request);
+        }
+        else
+        {
+            DialogFragment showInternet = new LoginActivity.showInternetDialogFragment();
+            showInternet.show(getFragmentManager(), "showInternet");
         }
     }
 }
