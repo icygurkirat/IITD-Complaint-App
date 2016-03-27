@@ -15,7 +15,7 @@ import java.util.Map;
 public class ComplaintAppApplication extends Application{
     private static final String SET_COOKIE_KEY = "Set-Cookie";
     private static final String COOKIE_KEY = "Cookie";
-    private static final String SESSION_COOKIE = "session_id_moodleplus";
+    private static final String SESSION_COOKIE = "session_id_iitdcomplaints";
 
     private static RequestQueue mRequestQueue;
     //    private static CookieManager cookieManager;
