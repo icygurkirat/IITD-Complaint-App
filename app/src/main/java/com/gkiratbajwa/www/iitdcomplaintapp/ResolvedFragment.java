@@ -1,7 +1,10 @@
 package com.gkiratbajwa.www.iitdcomplaintapp;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.net.DhcpInfo;
 import android.net.Uri;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -14,6 +17,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,6 +33,10 @@ public class ResolvedFragment extends Fragment {
     private RecyclerView recyclerView;
     private ComplaintAdapter mAdapter;
     View rootView;
+    String URL;
+    SharedPreferences user;
+    int user_Id;
+    RequestQueue mqueue;
 
     public ResolvedFragment() {
         // Required empty public constructor
@@ -30,11 +45,17 @@ public class ResolvedFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Complaint complaint = new Complaint("Tap Broken", "Main Secy", "2015");
-        complaintsList.add(complaint);
+        final WifiManager manager = (WifiManager) super.getActivity().getSystemService(getActivity().WIFI_SERVICE);
+        final DhcpInfo dhcp = manager.getDhcpInfo();
+        String gateway = LoginActivity.intToIp(dhcp.gateway);
+        URL = "http://"+gateway +":8000";
+        user = getActivity().getApplication().getSharedPreferences("profileData", getActivity().MODE_PRIVATE);
+        user_Id = user.getInt("id", 0);
+        //default implementation of handling cookies
+        final ComplaintAppApplication complaintAppApplication=(ComplaintAppApplication) getActivity().getApplicationContext();
 
-        complaint = new Complaint("Loud Noises", "House Secy", "2015");
-        complaintsList.add(complaint);
+        //initialize request queue
+        mqueue = complaintAppApplication.getmRequestQueue();
     }
 
     @Override
@@ -42,6 +63,7 @@ public class ResolvedFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         rootView = inflater.inflate(R.layout.fragment_resolved, container, false);
+        showComplaints();
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
         mAdapter = new ComplaintAdapter(complaintsList);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
@@ -110,5 +132,41 @@ public class ResolvedFragment extends Fragment {
         public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
 
         }
+    }
+
+    private void showComplaints() {
+        CustomJsonRequest request = new CustomJsonRequest(URL+"/complaints/get_resolved.json"+"/"+user_Id,null
+                ,new Response.Listener<String>(){
+            @Override
+            //Parse LOGIN
+            public void onResponse(String response1){
+                try {
+                    JSONObject response = new JSONObject(response1);
+                    JSONArray complaints = response.getJSONArray("complaints");
+                    for(int i=0;i<complaints.length();i++){
+                        final JSONObject complaint = complaints.getJSONObject(i);
+                        String name = complaint.getString("name");
+                        String description = complaint.getString("description");
+                        String date = complaint.getString("datePosted");
+                        Complaint c = new Complaint(name, description, date);
+                        complaintsList.add(c);
+                    }
+                }
+                catch(JSONException e){
+
+                }
+            }
+        }
+                ,new Response.ErrorListener() {
+            @Override
+            //Handle Errors
+            public void onErrorResponse(VolleyError volleyError) {
+                Toast.makeText(getContext(), volleyError.getMessage(), Toast.LENGTH_SHORT).show();
+
+            }
+        });
+        request.setTag("loginRequest");
+
+        mqueue.add(request);
     }
 }
