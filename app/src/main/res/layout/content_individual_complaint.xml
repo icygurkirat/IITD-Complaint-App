@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -13,4 +13,116 @@
     tools:showIn="@layout/activity_individual_complaint"
     android:id="@+id/individual">
 
-</RelativeLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textSize="20pt"
+            android:text="COMPLAINT PROFILE"
+            android:textStyle="bold"
+            android:id="@+id/textView"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="35dp"/>
+
+        <TextView
+            android:id="@+id/profile_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12pt"
+            android:text="Name"
+            android:layout_below="@+id/textView"
+            android:paddingTop="25dp"
+            android:paddingLeft="5dp"
+            />
+
+        <TextView
+            android:id="@+id/profile_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12pt"
+            android:text="Description"
+            android:layout_below="@+id/profile_name"
+            android:paddingTop="25dp"
+            android:paddingLeft="5dp"
+            />
+
+        <TextView
+            android:id="@+id/profile_datePosted"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12pt"
+            android:text="Date Posted"
+            android:layout_below="@+id/profile_description"
+            android:paddingTop="25dp"
+            android:paddingLeft="5dp"
+            />
+
+        <TextView
+            android:id="@+id/profile_to"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12pt"
+            android:text="To"
+            android:layout_below="@+id/profile_datePosted"
+            android:paddingTop="25dp"
+            android:paddingLeft="5dp"
+            />
+
+        <TextView
+            android:id="@+id/profile_by"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12pt"
+            android:text="By"
+            android:layout_below="@+id/profile_to"
+            android:paddingTop="25dp"
+            android:paddingLeft="5dp"
+            />
+
+        <TextView
+            android:id="@+id/profile_type"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12pt"
+            android:text="Type"
+            android:layout_below="@+id/profile_by"
+            android:paddingTop="25dp"
+            android:paddingLeft="5dp"/>
+
+        <TextView
+            android:id="@+id/profile_upvote"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12pt"
+            android:text="Upvotes"
+            android:layout_below="@+id/profile_type"
+            android:paddingTop="25dp"
+            android:paddingLeft="5dp"
+            />
+
+        <TextView
+            android:id="@+id/profile_downvote"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12pt"
+            android:text="Downvotes"
+            android:layout_below="@+id/profile_upvote"
+            android:paddingTop="25dp"
+            android:paddingLeft="5dp"/>
+
+        <TextView
+            android:id="@+id/profile_dateResolved"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12pt"
+            android:text="Date Resolved"
+            android:layout_below="@+id/profile_downvote"
+            android:paddingTop="25dp"
+            android:paddingLeft="5dp"/>
+
+    </RelativeLayout>
+</FrameLayout>
