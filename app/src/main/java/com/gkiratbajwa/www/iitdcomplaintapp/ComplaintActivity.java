@@ -149,7 +149,8 @@ public class ComplaintActivity extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_complaint, container, false);
+            Integer section = getArguments().getInt(ARG_SECTION_NUMBER);
+            View rootView  = inflater.inflate(R.layout.fragment_sent, container, false);
             return rootView;
         }
     }

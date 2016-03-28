@@ -27,6 +27,10 @@
         <activity
             android:name=".ComplaintActivity"
             android:label="@string/title_activity_complaint"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".IndividualComplaint"
+            android:label="@string/title_activity_individual_complaint"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 

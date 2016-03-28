@@ -32,7 +32,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SentFragment extends Fragment {
-    private List<Complaint> complaintsList = new ArrayList<>();
+    private List<Complaint> complaintsList2 = new ArrayList<>();
     private RecyclerView recyclerView;
     private ComplaintAdapter mAdapter;
     View rootView;
@@ -40,6 +40,7 @@ public class SentFragment extends Fragment {
     SharedPreferences user;
     int user_Id;
     RequestQueue mqueue;
+    private List<Complaint> complaintsList = new ArrayList<>();
 
     public SentFragment() {
         // Required empty public constructor
@@ -54,21 +55,17 @@ public class SentFragment extends Fragment {
         URL = "http://"+gateway +":8000";
         user = getActivity().getApplication().getSharedPreferences("profileData", getActivity().MODE_PRIVATE);
         user_Id = user.getInt("id", 0);
-        //default implementation of handling cookies
-        final ComplaintAppApplication complaintAppApplication=(ComplaintAppApplication) getActivity().getApplicationContext();
-
-        //initialize request queue
-        mqueue = complaintAppApplication.getmRequestQueue();
-
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
         rootView = inflater.inflate(R.layout.fragment_sent, container, false);
-        showComplaints();
         recyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
+        Complaint c = new Complaint("Please Wait","Complaints are being received","Some time","dead");
+        complaintsList.add(c);
         mAdapter = new ComplaintAdapter(complaintsList);
         RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
         recyclerView.setLayoutManager(mLayoutManager);
@@ -77,8 +74,11 @@ public class SentFragment extends Fragment {
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getActivity().getApplicationContext(), recyclerView, new ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                Complaint complaint = complaintsList.get(position);
+                Complaint complaint = complaintsList2.get(position);
                 Toast.makeText(getActivity().getApplicationContext(), complaint.getName() + " is selected!", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(getContext(), IndividualComplaint.class);
+                intent.putExtra("id", complaint.getId());
+                startActivity(intent);
             }
 
             @Override
@@ -86,6 +86,7 @@ public class SentFragment extends Fragment {
 
             }
         }));
+        showComplaints1();
         return rootView;
     }
 
@@ -138,7 +139,7 @@ public class SentFragment extends Fragment {
         }
     }
 
-    private void showComplaints() {
+    private void showComplaints1() {
         CustomJsonRequest request = new CustomJsonRequest(URL+"/complaints/get_sent.json"+"/"+user_Id,null
                 ,new Response.Listener<String>(){
             @Override
@@ -147,20 +148,43 @@ public class SentFragment extends Fragment {
                 try {
                     JSONObject response = new JSONObject(response1);
                     JSONArray complaints = response.getJSONArray("complaints");
+                    Complaint d;
                     for(int i=0;i<complaints.length();i++){
                         final JSONObject complaint = complaints.getJSONObject(i);
                         String name = complaint.getString("name");
                         String description = complaint.getString("description");
                         String date = complaint.getString("datePosted");
-                        Complaint c = new Complaint(name, description, date);
-                        complaintsList.add(c);
+                        String complaintId = complaint.getString("id");
+                        d = new Complaint(name, description, date, complaintId);
+                        complaintsList2.add(d);
                     }
+                    mAdapter = new ComplaintAdapter(complaintsList2);
+                    RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity().getApplicationContext());
+                    recyclerView.setLayoutManager(mLayoutManager);
+                    recyclerView.setItemAnimator(new DefaultItemAnimator());
+                    recyclerView.setAdapter(mAdapter);
+                    recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getActivity().getApplicationContext(), recyclerView, new ClickListener() {
+                        @Override
+                        public void onClick(View view, int position) {
+                            Complaint complaint = complaintsList2.get(position);
+                            Toast.makeText(getActivity().getApplicationContext(), complaint.getName() + " is selected!", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(getContext(), IndividualComplaint.class);
+                            intent.putExtra("id", complaint.getId());
+                            startActivity(intent);
+                        }
+
+                        @Override
+                        public void onLongClick(View view, int position) {
+
+                        }
+                    }));
+
                 }
                 catch(JSONException e){
 
-                    }
                 }
             }
+        }
                 ,new Response.ErrorListener() {
             @Override
             //Handle Errors
@@ -169,8 +193,12 @@ public class SentFragment extends Fragment {
 
             }
         });
-        request.setTag("loginRequest");
+        request.setTag("complaintRequest");
+        //default implementation of handling cookies
+        final ComplaintAppApplication complaintAppApplication=(ComplaintAppApplication) getActivity().getApplicationContext();
 
+        //initialize request queue
+        mqueue = complaintAppApplication.getmRequestQueue();
         mqueue.add(request);
     }
 

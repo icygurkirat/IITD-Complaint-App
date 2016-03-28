@@ -6,14 +6,16 @@ package com.gkiratbajwa.www.iitdcomplaintapp;
  */
 public class Complaint {
     private String name, date, sentTo;
+    private String complaint_Id;
 
     public Complaint() {
     }
 
-    public Complaint(String name, String date, String sentTo) {
+    public Complaint(String name, String date, String sentTo, String complaint_Id) {
         this.name = name;
         this.date = date;
         this.sentTo = sentTo;
+        this.complaint_Id= complaint_Id;
     }
 
     public String getName() {
@@ -39,4 +41,8 @@ public class Complaint {
     public void setsentTo(String sentTo) {
         this.sentTo = sentTo;
     }
+
+    public String getId(){ return complaint_Id;}
+
+    public void setId(String id){ this.complaint_Id = id;}
 }
