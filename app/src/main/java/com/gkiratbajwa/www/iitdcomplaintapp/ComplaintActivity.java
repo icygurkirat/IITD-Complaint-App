@@ -12,10 +12,13 @@ import android.net.ConnectivityManager;
 import android.net.DhcpInfo;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 
@@ -84,8 +87,7 @@ public class ComplaintActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                logoutUser();
             }
         });
 
@@ -104,6 +106,17 @@ public class ComplaintActivity extends AppCompatActivity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_complaint, menu);
         return true;
+    }
+
+    //implement proper backstack
+    final String BackStack= "back";
+    private Boolean backExit = false;
+    @Override
+    public void onBackPressed() {
+        final ComplaintAppApplication complaintAppApplication=(ComplaintAppApplication) getApplicationContext();
+        RequestQueue mqueue= complaintAppApplication.getmRequestQueue();
+        mqueue.cancelAll("");
+
     }
 
     @Override
@@ -205,8 +218,9 @@ public class ComplaintActivity extends AppCompatActivity {
         }
     }
 
-    public void logoutUser(View view)
+    public void logoutUser()
     {
+
         final ComplaintAppApplication complaintAppApplication = (ComplaintAppApplication) getApplicationContext();
         RequestQueue mqueue = complaintAppApplication.getmRequestQueue();
 
@@ -221,7 +235,7 @@ public class ComplaintActivity extends AppCompatActivity {
 
         if (isConnected)
         {
-            //Checking for notifications
+
             CustomJsonRequest request = new CustomJsonRequest(URL + "/default/logout.json", null
                     , new Response.Listener<String>() {
                 @Override
@@ -231,9 +245,14 @@ public class ComplaintActivity extends AppCompatActivity {
                     try
                     {
                         JSONObject response=new JSONObject(response1);
+                        SharedPreferences pref1 = getApplicationContext().getSharedPreferences("loginData", MODE_PRIVATE);
+                        SharedPreferences.Editor editor1 = pref1.edit();
+                        editor1.putBoolean("loginSuccess", false);
+                        editor1.apply();
                         Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        Toast.makeText(getApplicationContext(), "Logout Successful!", Toast.LENGTH_SHORT).show();
                         startActivity(intent);
 
                     }
