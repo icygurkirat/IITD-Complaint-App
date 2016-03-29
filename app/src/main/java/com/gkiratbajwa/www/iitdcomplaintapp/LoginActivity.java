@@ -140,26 +140,64 @@ public class LoginActivity extends AppCompatActivity {
                     {
 
                         JSONObject user = response.getJSONObject("user");
-                        //Data received from JSON response. This data is further needed in other activity, hence is shared.
-                        SharedPreferences userData = getApplicationContext().getSharedPreferences("profileData",MODE_PRIVATE);
-                        SharedPreferences.Editor editor = userData.edit();
-                        editor.putString("firstName",user.getString("first_name"));
-                        editor.putString("username",user.getString("username"));
-                        editor.putInt("id",user.getInt("id"));
-                        editor.putInt("hostelId",user.getInt("hostel_id"));
-                        editor.putInt("verified",user.getInt("verified"));
-                        editor.putInt("type",user.getInt("type"));
-                        editor.apply();
-                        SharedPreferences pref1 = getApplicationContext().getSharedPreferences("loginData",MODE_PRIVATE);
-                        SharedPreferences.Editor editor1 = pref1.edit();
-                        editor1.putBoolean("loginSuccess",true);
-                        editor1.apply();
+                        if(user.getInt("verified")==0)
+                        {
+                            CustomJsonRequest request = new CustomJsonRequest(URL + "/default/logout.json", null
+                                    , new Response.Listener<String>() {
+                                @Override
+                                public void onResponse(String response1)
+                                {
+                                    try
+                                    {
+                                        JSONObject response=new JSONObject(response1);
+                                        SharedPreferences pref1 = getApplicationContext().getSharedPreferences("loginData", MODE_PRIVATE);
+                                        SharedPreferences.Editor editor1 = pref1.edit();
+                                        editor1.putBoolean("loginSuccess", false);
+                                        editor1.apply();
+                                        Toast.makeText(getApplicationContext(), "You are not yet verified!", Toast.LENGTH_SHORT).show();
 
-                        Toast.makeText(getApplicationContext(),"Login Successful!", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(getApplicationContext(), ComplaintActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
+                                    }
+                                    catch (JSONException e) {
+                                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                            }
+                                    , new Response.ErrorListener() {
+                                @Override
+                                //Handle Errors
+                                public void onErrorResponse(VolleyError volleyError) {
+                                    Toast.makeText(getApplicationContext(), "Server not reachable!", Toast.LENGTH_SHORT).show();
+
+                                }
+                            });
+                            request.setTag("logoutRequest");
+
+                            mqueue.add(request);
+
+                        }
+                        else
+                        {
+                            //Data received from JSON response. This data is further needed in other activity, hence is shared.
+                            SharedPreferences userData = getApplicationContext().getSharedPreferences("profileData", MODE_PRIVATE);
+                            SharedPreferences.Editor editor = userData.edit();
+                            editor.putString("firstName", user.getString("first_name"));
+                            editor.putString("username", user.getString("username"));
+                            editor.putInt("id", user.getInt("id"));
+                            editor.putInt("hostelId", user.getInt("hostel_id"));
+                            editor.putInt("verified", user.getInt("verified"));
+                            editor.putInt("type", user.getInt("type"));
+                            editor.apply();
+                            SharedPreferences pref1 = getApplicationContext().getSharedPreferences("loginData", MODE_PRIVATE);
+                            SharedPreferences.Editor editor1 = pref1.edit();
+                            editor1.putBoolean("loginSuccess", true);
+                            editor1.apply();
+
+                            Toast.makeText(getApplicationContext(), "Login Successful!", Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(getApplicationContext(), ComplaintActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                        }
                     }
                     else {
                         Toast.makeText(getApplicationContext(),"Invalid Credentials!", Toast.LENGTH_SHORT).show();

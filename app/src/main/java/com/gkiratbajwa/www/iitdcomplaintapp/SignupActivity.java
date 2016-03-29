@@ -145,9 +145,10 @@ public class SignupActivity extends AppCompatActivity implements AdapterView.OnI
                             boolean success = response.getBoolean("success");
                             if (success) {
                                 Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                                Toast.makeText(getApplicationContext(), "Successfully signed up!", Toast.LENGTH_SHORT).show();
                                 startActivity(intent);
                             } else
-                                Toast.makeText(getApplicationContext(), "Server declined the request", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplicationContext(), "Server declined the request!", Toast.LENGTH_SHORT).show();
 
                         } catch (JSONException e) {
                             Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();

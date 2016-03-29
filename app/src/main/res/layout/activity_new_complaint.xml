@@ -79,6 +79,30 @@
             android:paddingLeft="10dp"
             android:spinnerMode="dropdown"/>
 
+        <TextView
+            android:id="@+id/newComplaint_prof"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="10pt"
+            android:textColor="#000000"
+            android:text="Professor: "
+            android:layout_below="@+id/spinner_to"
+            android:paddingTop="25dp"
+            android:paddingLeft="5dp"
+            android:visibility="invisible"
+            />
+
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/spinner_prof"
+            android:layout_below="@+id/spinner_to"
+            android:layout_toRightOf="@id/newComplaint_prof"
+            android:paddingTop="15dp"
+            android:paddingLeft="10dp"
+            android:visibility="invisible"
+            android:spinnerMode="dropdown"/>
+
         <Button
             android:id="@+id/newComplaint_button"
             android:layout_width="wrap_content"
@@ -86,9 +110,9 @@
             android:text="SUBMIT"
             android:onClick="submitComplaint"
             android:background="#3F81B5"
-            android:layout_below="@+id/spinner_to"
-            android:layout_alignRight="@+id/spinner_to"
-            android:layout_alignEnd="@+id/spinner_to" />
+            android:layout_below="@+id/spinner_prof"
+            android:layout_alignRight="@+id/spinner_prof"
+            android:layout_alignEnd="@+id/spinner_prof" />
 
     </RelativeLayout>
 
