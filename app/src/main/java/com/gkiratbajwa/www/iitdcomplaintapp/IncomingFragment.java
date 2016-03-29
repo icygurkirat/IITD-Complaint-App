@@ -76,6 +76,7 @@ public class IncomingFragment extends Fragment {
                 Toast.makeText(getActivity().getApplicationContext(), complaint.getName() + " is selected!", Toast.LENGTH_SHORT).show();
                 Intent intent = new Intent(getContext(), IndividualComplaint.class);
                 intent.putExtra("id", complaint.getId());
+                intent.putExtra("resolve",true);
                 startActivity(intent);
             }
 

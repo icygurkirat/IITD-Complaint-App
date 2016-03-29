@@ -12,6 +12,9 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -29,6 +32,8 @@ public class IndividualComplaint extends AppCompatActivity {
     RequestQueue mqueue;
     String complaintTo;
     String complaintBy;
+    boolean flag;
+    Intent intent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +46,21 @@ public class IndividualComplaint extends AppCompatActivity {
         final DhcpInfo dhcp = manager.getDhcpInfo();
         String gateway = LoginActivity.intToIp(dhcp.gateway);
         URL = "http://"+gateway +":8000";
-        id = getIntent().getExtras().getString("id");
+        intent = getIntent();
+        id = intent.getExtras().getString("id");
+        flag = intent.getExtras().getBoolean("resolve");
+        Button button = (Button) findViewById(R.id.resolveButton);
+        if(!flag)
+        {
+            button.setVisibility(View.INVISIBLE);
+            Toast.makeText(getApplicationContext(), "Invisible", Toast.LENGTH_SHORT).show();
+
+        }
+        else
+        {
+            button.setVisibility(View.VISIBLE);
+            Toast.makeText(getApplicationContext(), "Visible", Toast.LENGTH_SHORT).show();
+        }
         showIndividualComplaint();
     }
 
@@ -104,6 +123,8 @@ public class IndividualComplaint extends AppCompatActivity {
                     {
                         dateResolved.setText(dateResolved.getText()+"\t:\t"+complaint.getString("dateResolved"));
                     }
+                    JSONArray comments =  response.getJSONArray("comments");
+                    sendComment();
 
                 }
                 catch(JSONException e){
@@ -206,5 +227,205 @@ public class IndividualComplaint extends AppCompatActivity {
         mqueue = complaintAppApplication.getmRequestQueue();
         mqueue.add(request);
     }
+
+    private void sendComment()
+    {
+        RelativeLayout layout = (RelativeLayout) findViewById(R.id.postComments);
+
+        Button sendButton = new Button(getApplicationContext());
+        sendButton.setText("SEND");
+        RelativeLayout.LayoutParams lay2= new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+        lay2.addRule(RelativeLayout.BELOW, R.id.comText);
+        sendButton.setLayoutParams(lay2);
+        sendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    EditText comment_send = (EditText) findViewById(R.id.comText);
+                    String desc = comment_send.getText().toString().replaceAll(" ", "%20");
+                    if (desc.length() == 0) {
+                        Toast.makeText(getApplicationContext(),"Empty comments are not allowed",Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    CustomJsonRequest request = new CustomJsonRequest(URL + "/complaints/post_comment.json?Complaint_id="+id+"&description="+desc, null
+                            , new Response.Listener<String>() {
+                        @Override
+                        //Parse LOGIN
+                        public void onResponse(String response) {
+
+                            try {
+                                JSONObject response1 = new JSONObject(response);
+                                boolean success = response1.getBoolean("success");
+                                if (success) {
+                                    Toast.makeText(getApplicationContext(), "Comment successfully posted", Toast.LENGTH_SHORT).show();
+                                    Intent intent = getIntent();
+                                    finish();
+                                    startActivity(intent);
+                                } else {
+                                    Toast.makeText(getApplicationContext(), "Comment failed to post", Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (JSONException e) {
+                                Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                            , new Response.ErrorListener() {
+                        @Override
+                        //Handle Errors
+                        public void onErrorResponse(VolleyError volleyError) {
+                            Toast.makeText(getApplicationContext(), volleyError.getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                    request.setTag("commentRequest");
+                    final ComplaintAppApplication complaintAppApplication = (ComplaintAppApplication) getApplicationContext();
+
+                    //initialize request queue
+                    mqueue = complaintAppApplication.getmRequestQueue();
+                    mqueue.add(request);
+                } catch (Exception e) {
+
+                }
+            }
+        });
+        layout.addView(sendButton);
+
+    }
+
+    public void doUpvote(View view)
+    {
+        CustomJsonRequest request = new CustomJsonRequest(URL+"/complaints/upvote.json/"+id,null
+                ,new Response.Listener<String>(){
+            @Override
+            //Parse LOGIN
+            public void onResponse(String response1){
+                try {
+                    JSONObject response = new JSONObject(response1);
+                    Boolean upvote = response.getBoolean("success");
+                    if(upvote)
+                    {
+                        Toast.makeText(getApplicationContext(), "Your vote has been registered", Toast.LENGTH_SHORT).show();
+                        Intent intent = getIntent();
+                        finish();
+                        startActivity(intent);
+
+                    }
+                    else
+                    {
+                        Toast.makeText(getApplicationContext(), "You have already voted", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                catch(JSONException e){
+
+                }
+            }
+        }
+                ,new Response.ErrorListener() {
+            @Override
+            //Handle Errors
+            public void onErrorResponse(VolleyError volleyError) {
+                Toast.makeText(getApplicationContext(), volleyError.getMessage(), Toast.LENGTH_SHORT).show();
+
+            }
+        });
+        request.setTag("complaintRequest");
+        //default implementation of handling cookies
+        final ComplaintAppApplication complaintAppApplication=(ComplaintAppApplication)getApplicationContext();
+
+        //initialize request queue
+        mqueue = complaintAppApplication.getmRequestQueue();
+        mqueue.add(request);
+    }
+
+    public void doDownvote(View view)
+    {
+        CustomJsonRequest request = new CustomJsonRequest(URL+"/complaints/downvote.json/"+id,null
+                ,new Response.Listener<String>(){
+            @Override
+            //Parse LOGIN
+            public void onResponse(String response1){
+                try {
+                    JSONObject response = new JSONObject(response1);
+                    Boolean downvote = response.getBoolean("success");
+                    if(downvote)
+                    {
+                        Toast.makeText(getApplicationContext(), "Your vote has been registered", Toast.LENGTH_SHORT).show();
+                        Intent intent = getIntent();
+                        finish();
+                        startActivity(intent);
+
+                    }
+                    else
+                    {
+                        Toast.makeText(getApplicationContext(), "You have already voted", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                catch(JSONException e){
+
+                }
+            }
+        }
+                ,new Response.ErrorListener() {
+            @Override
+            //Handle Errors
+            public void onErrorResponse(VolleyError volleyError) {
+                Toast.makeText(getApplicationContext(), volleyError.getMessage(), Toast.LENGTH_SHORT).show();
+
+            }
+        });
+        request.setTag("complaintRequest");
+        //default implementation of handling cookies
+        final ComplaintAppApplication complaintAppApplication=(ComplaintAppApplication)getApplicationContext();
+
+        //initialize request queue
+        mqueue = complaintAppApplication.getmRequestQueue();
+        mqueue.add(request);
+    }
+
+    public void doResolve(View view)
+    {
+        CustomJsonRequest request = new CustomJsonRequest(URL+"/complaints/resolve.json/"+id,null
+                ,new Response.Listener<String>(){
+            @Override
+            //Parse LOGIN
+            public void onResponse(String response1){
+                try {
+                    JSONObject response = new JSONObject(response1);
+                    Boolean resolve = response.getBoolean("success");
+                    if(resolve)
+                    {
+                        Toast.makeText(getApplicationContext(), "The complaint has been resolved", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(getApplicationContext(), IndividualComplaint.class);
+                        intent.putExtra("id", id);
+                        intent.putExtra("resolve", false);
+                        startActivity(intent);
+
+                    }
+                    else
+                    {
+                        Toast.makeText(getApplicationContext(), "Wrong input", Toast.LENGTH_SHORT).show();
+                    }
+                }
+                catch(JSONException e){
+
+                }
+            }
+        }
+                ,new Response.ErrorListener() {
+            @Override
+            //Handle Errors
+            public void onErrorResponse(VolleyError volleyError) {
+                Toast.makeText(getApplicationContext(), volleyError.getMessage(), Toast.LENGTH_SHORT).show();
+
+            }
+        });
+        request.setTag("complaintRequest");
+        //default implementation of handling cookies
+        final ComplaintAppApplication complaintAppApplication=(ComplaintAppApplication)getApplicationContext();
+
+        //initialize request queue
+        mqueue = complaintAppApplication.getmRequestQueue();
+        mqueue.add(request);
+    }
+
 
 }
