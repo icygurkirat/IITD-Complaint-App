@@ -47,7 +47,7 @@
             android:layout_toRightOf="@id/signup_name"
             android:layout_below="@id/signup_title"
             android:layout_toEndOf="@id/signup_name"
-            android:paddingTop="7pt"
+            android:paddingTop="11.5pt"
             android:textSize="10pt"/>
 
         <TextView
@@ -56,7 +56,7 @@
             android:layout_height="wrap_content"
             android:textSize="10pt"
             android:text="Type: "
-            android:layout_below="@+id/signup_name"
+            android:layout_below="@+id/signup_editText_name"
             android:paddingTop="25dp"
             android:paddingLeft="5dp"
             />
@@ -65,7 +65,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/spinner_type"
-            android:layout_below="@+id/signup_name"
+            android:layout_below="@+id/signup_editText_name"
             android:layout_toRightOf="@id/signup_type"
             android:paddingTop="15dp"
             android:paddingLeft="10dp"
@@ -110,7 +110,7 @@
             android:layout_toRightOf="@id/signup_name"
             android:layout_below="@id/spinner_hostel"
             android:layout_toEndOf="@id/signup_username"
-            android:paddingTop="7pt"
+            android:paddingTop="11.5pt"
             android:textSize="10pt"/>
 
         <TextView
@@ -119,7 +119,7 @@
             android:layout_height="wrap_content"
             android:textSize="10pt"
             android:text="Password: "
-            android:layout_below="@id/signup_username"
+            android:layout_below="@id/signup_editText_username"
             android:paddingTop="25dp"
             android:paddingLeft="5dp"
             />
@@ -129,11 +129,11 @@
             android:layout_height="wrap_content"
             android:id="@+id/signup_editText_password"
             android:layout_toRightOf="@id/signup_password"
-            android:layout_below="@id/signup_username"
+            android:layout_below="@id/signup_editText_username"
             android:layout_toEndOf="@id/signup_password"
             android:inputType="textPassword"
             android:ems="10"
-            android:paddingTop="7pt"
+            android:paddingTop="11.5pt"
             android:textSize="10pt"/>
 
         <Button

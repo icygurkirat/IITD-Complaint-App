@@ -33,17 +33,20 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+//This class displays the incoming, sent and resolved complaints. Moreover, it has buttons for new complaint, reload logout.
 public class ComplaintActivity extends AppCompatActivity {
 
     String firstname,username;
@@ -69,6 +72,15 @@ public class ComplaintActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_complaint);
 
+        //Getting loginData from shared preferences
+        SharedPreferences userData = getApplication().getSharedPreferences("profileData", MODE_PRIVATE);
+        firstname=userData.getString("firstname","");
+        username=userData.getString("username","");
+        id=userData.getInt("id",-1);
+        hostelId=userData.getInt("hostelId",-1);
+        type=userData.getInt("type",-1);
+        verified=userData.getInt("verified",-1);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
@@ -83,21 +95,79 @@ public class ComplaintActivity extends AppCompatActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
         tabLayout.setupWithViewPager(mViewPager);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+
+        //Populating the floatingactionsmenu with add complaints buttons and logout button
+        FloatingActionsMenu menu=(FloatingActionsMenu)findViewById(R.id.multiple_actions);
+        com.getbase.floatingactionbutton.FloatingActionButton complaint1=new com.getbase.floatingactionbutton.FloatingActionButton(this);
+        complaint1.setSize(com.getbase.floatingactionbutton.FloatingActionButton.SIZE_MINI);
+        complaint1.setTitle("Send individual complaint");
+        complaint1.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View v) {
+                if(verified==1)
+                    newComplaint(2);
+                 else
+                    Toast.makeText(getApplicationContext(), "User Not Verified!", Toast.LENGTH_SHORT).show();
+            }
+        });
+        menu.addButton(complaint1);
+
+        com.getbase.floatingactionbutton.FloatingActionButton complaint2=new com.getbase.floatingactionbutton.FloatingActionButton(this);
+        complaint2.setSize(com.getbase.floatingactionbutton.FloatingActionButton.SIZE_MINI);
+        complaint2.setTitle("Send hostel level complaint");
+        complaint2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(verified==1)
+                    newComplaint(1);
+                else
+                    Toast.makeText(getApplicationContext(), "User Not Verified!", Toast.LENGTH_SHORT).show();
+            }
+        });
+        menu.addButton(complaint2);
+
+        com.getbase.floatingactionbutton.FloatingActionButton complaint3=new com.getbase.floatingactionbutton.FloatingActionButton(this);
+        complaint3.setSize(com.getbase.floatingactionbutton.FloatingActionButton.SIZE_MINI);
+        complaint3.setTitle("Send institute level complaint");
+        complaint3.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(verified==1)
+                    newComplaint(0);
+                else
+                    Toast.makeText(getApplicationContext(), "User Not Verified!", Toast.LENGTH_SHORT).show();
+            }
+        });
+        menu.addButton(complaint3);
+
+        com.getbase.floatingactionbutton.FloatingActionButton reload=new com.getbase.floatingactionbutton.FloatingActionButton(this);
+        reload.setSize(com.getbase.floatingactionbutton.FloatingActionButton.SIZE_MINI);
+        reload.setTitle("Reload Complaints");
+        reload.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Reload Activity
+                Toast.makeText(getApplicationContext(), "Reloading Complaints!", Toast.LENGTH_SHORT).show();
+                Intent intent = getIntent();
+                finish();
+                startActivity(intent);
+            }
+        });
+        menu.addButton(reload);
+
+        com.getbase.floatingactionbutton.FloatingActionButton logout=new com.getbase.floatingactionbutton.FloatingActionButton(this);
+        logout.setSize(com.getbase.floatingactionbutton.FloatingActionButton.SIZE_MINI);
+        logout.setTitle("Log out");
+        logout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 logoutUser();
             }
         });
+        menu.addButton(logout);
 
-        SharedPreferences userData = getApplication().getSharedPreferences("profileData", MODE_PRIVATE);
-        firstname=userData.getString("firstname","");
-        username=userData.getString("username","");
-        id=userData.getInt("id",-1);
-        hostelId=userData.getInt("hostelId",-1);
-        type=userData.getInt("type",-1);
-        verified=userData.getInt("verified",-1);
+
+
     }
 
 
@@ -109,8 +179,6 @@ public class ComplaintActivity extends AppCompatActivity {
     }
 
     //implement proper backstack
-    final String BackStack= "back";
-    private Boolean backExit = false;
     @Override
     public void onBackPressed() {
         final ComplaintAppApplication complaintAppApplication=(ComplaintAppApplication) getApplicationContext();
@@ -220,7 +288,7 @@ public class ComplaintActivity extends AppCompatActivity {
 
     public void logoutUser()
     {
-
+        //function called when logout button is pressed. It uses GET request with logout API
         final ComplaintAppApplication complaintAppApplication = (ComplaintAppApplication) getApplicationContext();
         RequestQueue mqueue = complaintAppApplication.getmRequestQueue();
 
@@ -257,7 +325,7 @@ public class ComplaintActivity extends AppCompatActivity {
 
                     }
                     catch (JSONException e) {
-                        Toast.makeText(getApplicationContext(), e.getMessage() + "*", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -265,7 +333,7 @@ public class ComplaintActivity extends AppCompatActivity {
                 @Override
                 //Handle Errors
                 public void onErrorResponse(VolleyError volleyError) {
-                    Toast.makeText(getApplicationContext(), gateway + volleyError.getMessage()+"/", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplicationContext(), "Server not reachable!", Toast.LENGTH_SHORT).show();
 
                 }
             });
@@ -278,5 +346,13 @@ public class ComplaintActivity extends AppCompatActivity {
             DialogFragment showInternet = new LoginActivity.showInternetDialogFragment();
             showInternet.show(getFragmentManager(), "showInternet");
         }
+    }
+
+    //Open NewComplaint activity on clicking new complaint button
+    public void newComplaint(int type)
+    {
+        Intent intent=new Intent(getApplicationContext(),NewComplaint.class);
+        intent.putExtra("type",type);
+        startActivity(intent);
     }
 }
