@@ -26,6 +26,11 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 
+/*
+    This activity is displayed on clicking the SIGNUP button in the LoginActivity and helps to register a new user to the server.
+    It has fields for entering name,username, password, type and hostel.
+    POST request is implemented on clicking the submit button within this activity
+ */
 public class SignupActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
 
     @Override
@@ -34,6 +39,7 @@ public class SignupActivity extends AppCompatActivity implements AdapterView.OnI
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
+        //populating the data in spinners
         Spinner typeSpinner = (Spinner)findViewById(R.id.spinner_type);
         String[] types = new String[]{"Director", "Dean of Student Affairs","Dean of Academics","Professor","Warden","Caretaker",
                 "House Secretary","Maintenance Secretary","Mess Secretary","Sports Secretary","Cultural Secretary","Student"};
@@ -47,13 +53,14 @@ public class SignupActivity extends AppCompatActivity implements AdapterView.OnI
         hostelSpinner.setAdapter(hostelAdapter);
     }
 
-
+    //Function is called whenever the selected item in typeSpinner changes
     public void onItemSelected(AdapterView<?> parent, View view,int pos, long id)
     {
         String type=parent.getItemAtPosition(pos).toString();
         char first=type.charAt(0);
         if(first=='D'||first=='P')
         {
+            //if the user is director, dean or professor
             Spinner hostelSpinner = (Spinner)findViewById(R.id.spinner_hostel);
             hostelSpinner.setEnabled(false);
         }
@@ -69,6 +76,7 @@ public class SignupActivity extends AppCompatActivity implements AdapterView.OnI
     {
     }
 
+    //parameters to be posted by POST request
     public HashMap<String,String> getParams()
     {
         EditText signupName=(EditText) findViewById(R.id.signup_editText_name);
@@ -86,6 +94,7 @@ public class SignupActivity extends AppCompatActivity implements AdapterView.OnI
         return params;
     }
 
+    //Function called when submit button is pressed
     public void submit(View view)
     {
         final ComplaintAppApplication complaintAppApplication = (ComplaintAppApplication) getApplicationContext();

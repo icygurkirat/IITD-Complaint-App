@@ -29,7 +29,11 @@ import com.android.volley.VolleyError;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-
+/*The first activity displayed on opening the app.
+    It consists of 2 editText fields and a button.
+     On pressing the button, the information in the EditText fields (if non-empty) is sent to the server via GET request.
+     If data is valid, the a positive response is got from the server and ComplaintActivity opens.
+ */
 public class LoginActivity extends AppCompatActivity {
 
     boolean loginState = false;
@@ -40,6 +44,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         SharedPreferences preferences;
         preferences=getApplicationContext().getSharedPreferences("loginData", MODE_PRIVATE);
+        //If user is already logged in, directly open the next activity
         if(preferences.getBoolean("loginSuccess",false)){
             super.onCreate(savedInstanceState);
             Intent intent = new Intent(getApplicationContext(), ComplaintActivity.class);
@@ -48,6 +53,7 @@ public class LoginActivity extends AppCompatActivity {
             startActivity(intent);
         }
         else {
+            //else, continue with the same one.
             super.onCreate(savedInstanceState);
             setContentView(R.layout.activity_login);
             Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -85,7 +91,7 @@ public class LoginActivity extends AppCompatActivity {
                 ((addr >>>= 8) & 0xFF));
     }
 
-
+    //start SignupActivity on pressing Signup Button
     public void signupUser(View view){
         Intent intent=new Intent(getApplicationContext(),SignupActivity.class);
         startActivity(intent);
@@ -94,20 +100,24 @@ public class LoginActivity extends AppCompatActivity {
     public void loginUser(View view)
     {
         if(!loginState)
-        {
+        {   //If user is not logged in, and is connected to network, pass the data to login function
             ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
             NetworkInfo network = cm.getActiveNetworkInfo();
             boolean isConnected = network != null && network.isConnectedOrConnecting();
             if (isConnected) {
-                final WifiManager manager = (WifiManager) super.getSystemService(WIFI_SERVICE);
-                final DhcpInfo dhcp = manager.getDhcpInfo();
-                String gateway = intToIp(dhcp.gateway);
-                URL = "http://"+gateway +":8000";
                 final EditText editText_username =(EditText) findViewById(R.id.editText_Username);
                 final EditText editText_password =(EditText) findViewById(R.id.editText_Password);
                 String username = editText_username.getText().toString();
                 String password = editText_password.getText().toString();
-                login(username,password,gateway);
+                if(username.isEmpty()||password.isEmpty())
+                    Toast.makeText(getApplicationContext(),"Some fields are Empty!", Toast.LENGTH_SHORT).show();
+                else {
+                    final WifiManager manager = (WifiManager) super.getSystemService(WIFI_SERVICE);
+                    final DhcpInfo dhcp = manager.getDhcpInfo();
+                    String gateway = intToIp(dhcp.gateway);
+                    URL = "http://" + gateway + ":8000";
+                    login(username, password);
+                }
             }
             else {
                 DialogFragment showInternet = new showInternetDialogFragment();
@@ -116,7 +126,8 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void login(String username, String password, final String gateway) {
+    //GET request is sent to the server via login API
+    private void login(String username, String password) {
         final CustomJsonRequest request = new CustomJsonRequest(URL + "/default/login.json?userid="+username+"&password="+password,null
                 ,new Response.Listener<String>(){
             @Override
@@ -125,7 +136,6 @@ public class LoginActivity extends AppCompatActivity {
                 try {
                     JSONObject response = new JSONObject(response1);
                     boolean success = response.getBoolean("success");
-                    Toast.makeText(getApplicationContext(), success + gateway, Toast.LENGTH_SHORT).show();
                     if(success)
                     {
 
@@ -145,13 +155,14 @@ public class LoginActivity extends AppCompatActivity {
                         editor1.putBoolean("loginSuccess",true);
                         editor1.apply();
 
-                        Toast.makeText(getApplicationContext(),user.getString("hostel_id"), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(),"Login Successful!", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(getApplicationContext(), ComplaintActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
                         startActivity(intent);
                     }
                     else {
+                        Toast.makeText(getApplicationContext(),"Invalid Credentials!", Toast.LENGTH_SHORT).show();
                         SharedPreferences pref1 = getApplicationContext().getSharedPreferences("loginData", MODE_PRIVATE);
                         SharedPreferences.Editor editor1 = pref1.edit();
                         editor1.putBoolean("loginSuccess", false);
@@ -167,7 +178,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             //Handle Errors
             public void onErrorResponse(VolleyError volleyError) {
-                Toast.makeText(getApplicationContext(),gateway+volleyError.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(),"Server not reachable!", Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -178,6 +189,7 @@ public class LoginActivity extends AppCompatActivity {
 
     }
 
+    //To show visible networks in case the user is not connected to a network
     public static class showInternetDialogFragment extends DialogFragment{
         @Override
         public Dialog onCreateDialog(Bundle savedInstanceState){
