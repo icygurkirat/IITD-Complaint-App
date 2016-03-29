@@ -74,11 +74,15 @@ public class SentFragment extends Fragment {
         recyclerView.addOnItemTouchListener(new RecyclerTouchListener(getActivity().getApplicationContext(), recyclerView, new ClickListener() {
             @Override
             public void onClick(View view, int position) {
-                Complaint complaint = complaintsList2.get(position);
-                Toast.makeText(getActivity().getApplicationContext(), complaint.getName() + " is selected!", Toast.LENGTH_SHORT).show();
-                Intent intent = new Intent(getContext(), IndividualComplaint.class);
-                intent.putExtra("id", complaint.getId());
-                startActivity(intent);
+//                Toast.makeText(getActivity().getApplicationContext(), complaint.getName() + " is selected!", Toast.LENGTH_SHORT).show();
+                if(complaintsList2.size()==0) {
+                }
+                else{
+                    Complaint complaint = complaintsList2.get(position);
+                    Intent intent = new Intent(getContext(), IndividualComplaint.class);
+                    intent.putExtra("id", complaint.getId());
+                    startActivity(intent);
+                }
             }
 
             @Override

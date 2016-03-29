@@ -142,10 +142,11 @@
             android:layout_height="wrap_content"
             android:text="SUBMIT"
             android:onClick="submit"
-            android:background="#3F81B5"
+            android:background="@color/colorPrimary"
             android:layout_below="@+id/signup_editText_password"
             android:layout_alignRight="@+id/signup_editText_password"
-            android:layout_alignEnd="@+id/signup_editText_password" />
+            android:layout_alignEnd="@+id/signup_editText_password"
+            android:textColor="@color/white"/>
 
     </RelativeLayout>
 

@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -12,12 +13,13 @@
     tools:context="com.gkiratbajwa.www.iitdcomplaintapp.LoginActivity"
     tools:showIn="@layout/activity_login">
 
+
     <EditText
         android:id="@+id/editText_Username"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:hint="Username"
-        android:layout_above="@+id/editText_Password"
+        android:layout_centerVertical="true"
         android:layout_alignParentLeft="true"
         android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
@@ -34,7 +36,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true"
-        android:layout_above="@+id/button_login"
+        android:layout_below="@id/editText_Username"
         android:drawableLeft="@android:drawable/ic_secure"
         android:drawablePadding="2dp"/>
 
@@ -44,9 +46,10 @@
         android:layout_height="wrap_content"
         android:text="Login"
         android:onClick="loginUser"
-        android:background="#3F81B5"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:background="@color/colorPrimary"
+        android:layout_below="@id/editText_Password"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/white"/>
 
     <Button
         android:id="@+id/button_signup"
@@ -54,10 +57,18 @@
         android:layout_height="wrap_content"
         android:text="SIGN UP"
         android:onClick="signupUser"
-        android:background="#3F81B5"
+        android:background="@color/colorPrimary"
         android:layout_below="@+id/editText_Password"
-        android:layout_alignRight="@+id/editText_Password"/>
+        android:layout_alignRight="@+id/editText_Password"
+        android:textColor="@color/white"/>
 
-
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/imageView"
+        android:src="@drawable/applogo"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/editText_Username"
+        android:layout_alignParentTop="true" />
 
 </RelativeLayout>

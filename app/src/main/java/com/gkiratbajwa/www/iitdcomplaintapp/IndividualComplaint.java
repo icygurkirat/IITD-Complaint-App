@@ -174,6 +174,8 @@ public class IndividualComplaint extends AppCompatActivity {
     public void onBackPressed()
     {
         Intent intent = new Intent(getApplicationContext(), ComplaintActivity.class);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }
 

@@ -109,7 +109,8 @@
             android:layout_height="wrap_content"
             android:text="SUBMIT"
             android:onClick="submitComplaint"
-            android:background="#3F81B5"
+            android:background="@color/colorPrimary"
+            android:textColor="@color/white"
             android:layout_below="@+id/spinner_prof"
             android:layout_alignRight="@+id/spinner_prof"
             android:layout_alignEnd="@+id/spinner_prof" />

@@ -12,6 +12,7 @@ import android.net.ConnectivityManager;
 import android.net.DhcpInfo;
 import android.net.NetworkInfo;
 import android.net.wifi.WifiManager;
+import android.os.Handler;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.TabLayout;
 import android.support.design.widget.FloatingActionButton;
@@ -178,13 +179,28 @@ public class ComplaintActivity extends AppCompatActivity {
         return true;
     }
 
+    private boolean backExit=false;
     //implement proper backstack
     @Override
     public void onBackPressed() {
         final ComplaintAppApplication complaintAppApplication=(ComplaintAppApplication) getApplicationContext();
         RequestQueue mqueue= complaintAppApplication.getmRequestQueue();
         mqueue.cancelAll("");
-
+        if(backExit){
+            finish();
+            System.exit(0);
+        }
+        else {
+            Toast.makeText(this, "Press Back again to Exit.",
+                    Toast.LENGTH_SHORT).show();
+            backExit = true;
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    backExit = false;
+                }
+            }, 3 * 1000);
+        }
     }
 
     @Override
