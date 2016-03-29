@@ -47,8 +47,8 @@ public class SignupActivity extends AppCompatActivity implements AdapterView.OnI
         typeSpinner.setAdapter(typeAdapter);
         typeSpinner.setOnItemSelectedListener(this);
         Spinner hostelSpinner = (Spinner)findViewById(R.id.spinner_hostel);
-        String[] hostels = new String[]{"Jwalamukhi", "Aravali", "Karakoram", "Nilgiri", "Kumaon", "Vindhyachal", "Shivalik", "Satpura",
-                "Zanskar", "Girnar", "Udaygiri", "Kailash", "Himadri"};
+        String[] hostels = new String[]{"Zanskar", "Shivalik", "Vindhyachal", "Kumaon", "Jwalamukhi", "Aravalli", "Karakoram",
+                "Nilgiri", "Satpura", "Girnar", "Udaygiri", "Kailash", "Himadri"};
         ArrayAdapter<String> hostelAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_dropdown_item, hostels);
         hostelSpinner.setAdapter(hostelAdapter);
     }
@@ -85,69 +85,87 @@ public class SignupActivity extends AppCompatActivity implements AdapterView.OnI
         EditText signupUsername=(EditText) findViewById(R.id.signup_editText_username);
         EditText signupPassword=(EditText) findViewById(R.id.signup_editText_password);
 
+        int type=signupType.getSelectedItemPosition()+1;
+        int hostelId;
+        if(type<=4)
+            hostelId=5;
+        else
+        {
+            hostelId=signupHostel.getSelectedItemPosition();
+            if(hostelId<=1)
+                hostelId+=3;
+            else
+                hostelId+=4;
+        }
+
         HashMap<String,String> params = new HashMap<String,String>();
-        params.put("hostel_id",Integer.toString(signupHostel.getSelectedItemPosition()));
-        params.put("type",Integer.toString(signupType.getSelectedItemPosition()+1));
+        params.put("type",Integer.toString(type));
+        params.put("hostel_id",Integer.toString(hostelId));
         params.put("username",signupUsername.getText().toString());
         params.put("password",signupPassword.getText().toString());
         params.put("first_name",signupName.getText().toString());
         return params;
     }
 
+    public boolean checkEmpty()
+    {
+        EditText signupName=(EditText) findViewById(R.id.signup_editText_name);
+        EditText signupUsername=(EditText) findViewById(R.id.signup_editText_username);
+        EditText signupPassword=(EditText) findViewById(R.id.signup_editText_password);
+        return (signupUsername.getText().toString().isEmpty()||signupPassword.getText().toString().isEmpty()||signupName.getText().toString().isEmpty());
+    }
+
     //Function called when submit button is pressed
     public void submit(View view)
     {
-        final ComplaintAppApplication complaintAppApplication = (ComplaintAppApplication) getApplicationContext();
-        RequestQueue mqueue = complaintAppApplication.getmRequestQueue();
-
-        final WifiManager manager = (WifiManager) getSystemService(WIFI_SERVICE);
-        final DhcpInfo dhcp = manager.getDhcpInfo();
-        final String gateway = LoginActivity.intToIp(dhcp.gateway);
-        String URL = "http://" + gateway + ":8000/default/register.json";
-
-        ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo network = cm.getActiveNetworkInfo();
-        boolean isConnected = network != null && network.isConnectedOrConnecting();
-
-        if(isConnected)
+        if(checkEmpty())
         {
-            CustomJsonRequest request = new CustomJsonRequest(Request.Method.POST, URL, getParams(), new Response.Listener<String>() {
-                //Send JSON request and handle the response
-                @Override
-                public void onResponse(String response1)
-                {
-                    try
-                    {
-                        JSONObject response = new JSONObject(response1);
-                        boolean success = response.getBoolean("success");
-                        if(success)
-                        {
-                            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
-                            startActivity(intent);
+            Toast.makeText(getApplicationContext(),"Some Fields are empty!", Toast.LENGTH_SHORT).show();
+        }else {
+
+            final ComplaintAppApplication complaintAppApplication = (ComplaintAppApplication) getApplicationContext();
+            RequestQueue mqueue = complaintAppApplication.getmRequestQueue();
+
+            final WifiManager manager = (WifiManager) getSystemService(WIFI_SERVICE);
+            final DhcpInfo dhcp = manager.getDhcpInfo();
+            final String gateway = LoginActivity.intToIp(dhcp.gateway);
+            String URL = "http://" + gateway + ":8000/default/register.json";
+
+            ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo network = cm.getActiveNetworkInfo();
+            boolean isConnected = network != null && network.isConnectedOrConnecting();
+
+            if (isConnected) {
+                CustomJsonRequest request = new CustomJsonRequest(Request.Method.POST, URL, getParams(), new Response.Listener<String>() {
+                    //Send JSON request and handle the response
+                    @Override
+                    public void onResponse(String response1) {
+                        try {
+                            JSONObject response = new JSONObject(response1);
+                            boolean success = response.getBoolean("success");
+                            if (success) {
+                                Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                                startActivity(intent);
+                            } else
+                                Toast.makeText(getApplicationContext(), "Server declined the request", Toast.LENGTH_SHORT).show();
+
+                        } catch (JSONException e) {
+                            Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                         }
-                        else
-                            Toast.makeText(getApplicationContext(),"Server declined the request", Toast.LENGTH_SHORT).show();
-
                     }
-                    catch (JSONException e) {
-                        Toast.makeText(getApplicationContext(),e.getMessage(), Toast.LENGTH_SHORT).show();
+                }, new Response.ErrorListener() {
+                    //Handle Error Responses
+                    @Override
+                    public void onErrorResponse(VolleyError volleyError) {
+                        Toast.makeText(getApplicationContext(), gateway + volleyError.getMessage(), Toast.LENGTH_SHORT).show();
                     }
-                }
-            }, new Response.ErrorListener()
-            {
-                //Handle Error Responses
-                @Override
-                public void onErrorResponse(VolleyError volleyError) {
-                    Toast.makeText(getApplicationContext(), gateway + volleyError.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-            request.setTag("signUp");
-            mqueue.add(request);
-        }
-        else
-        {
-            DialogFragment showInternet = new LoginActivity.showInternetDialogFragment();
-            showInternet.show(getFragmentManager(), "showInternet");
+                });
+                request.setTag("signUp");
+                mqueue.add(request);
+            } else {
+                DialogFragment showInternet = new LoginActivity.showInternetDialogFragment();
+                showInternet.show(getFragmentManager(), "showInternet");
+            }
         }
     }
 }
