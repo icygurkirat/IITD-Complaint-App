@@ -2,6 +2,7 @@ package com.gkiratbajwa.www.iitdcomplaintapp;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -12,6 +13,8 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.Html;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -120,6 +123,26 @@ public class IndividualComplaint extends AppCompatActivity {
                         dateResolved.setText(dateResolved.getText()+"\t:\t"+complaint.getString("dateResolved"));
                     }
                     JSONArray comments =  response.getJSONArray("comments");
+                    for(int i=0;i<comments.length();i++){
+
+                        RelativeLayout layout = (RelativeLayout) findViewById(R.id.complaintLayout);
+                        final String commentUser=comments.getJSONObject(i).getString("user_name");
+                        final String comment=comments.getJSONObject(i).getString("description");
+                        String display="<b>"+commentUser+"</b> : "+comment;
+                        TextView txt=new TextView(getApplicationContext());
+                        txt.setText(Html.fromHtml(display));
+                        txt.setTextColor(Color.parseColor("#000000"));
+                        txt.setId(i+10);
+                        txt.setTextSize(TypedValue.COMPLEX_UNIT_PT, 9);
+                        RelativeLayout.LayoutParams lay= new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                        if(i==0)
+                            lay.addRule(RelativeLayout.BELOW, R.id.resolveButton);
+                        else
+                            lay.addRule(RelativeLayout.BELOW, i+9);
+                        txt.setLayoutParams(lay);
+                        layout.addView(txt);
+
+                    }
                     sendComment();
 
                 }
