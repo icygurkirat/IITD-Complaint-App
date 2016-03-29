@@ -88,9 +88,9 @@ public class SignupActivity extends AppCompatActivity implements AdapterView.OnI
         HashMap<String,String> params = new HashMap<String,String>();
         params.put("hostel_id",Integer.toString(signupHostel.getSelectedItemPosition()));
         params.put("type",Integer.toString(signupType.getSelectedItemPosition()+1));
-        params.put("username",signupUsername.toString());
-        params.put("password",signupPassword.toString());
-        params.put("first_name",signupName.toString());
+        params.put("username",signupUsername.getText().toString());
+        params.put("password",signupPassword.getText().toString());
+        params.put("first_name",signupName.getText().toString());
         return params;
     }
 
@@ -103,7 +103,7 @@ public class SignupActivity extends AppCompatActivity implements AdapterView.OnI
         final WifiManager manager = (WifiManager) getSystemService(WIFI_SERVICE);
         final DhcpInfo dhcp = manager.getDhcpInfo();
         final String gateway = LoginActivity.intToIp(dhcp.gateway);
-        String URL = "http://" + gateway + ":8000/default/register";
+        String URL = "http://" + gateway + ":8000/default/register.json";
 
         ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo network = cm.getActiveNetworkInfo();
@@ -122,7 +122,7 @@ public class SignupActivity extends AppCompatActivity implements AdapterView.OnI
                         boolean success = response.getBoolean("success");
                         if(success)
                         {
-                            Intent intent = new Intent(getApplicationContext(), ComplaintActivity.class);
+                            Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
                             startActivity(intent);
                         }
                         else

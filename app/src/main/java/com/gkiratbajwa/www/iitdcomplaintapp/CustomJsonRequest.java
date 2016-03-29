@@ -33,7 +33,7 @@ public class CustomJsonRequest extends StringRequest {
 
     }
 
-    public CustomJsonRequest(int method, String url, Map<String, String> params,
+    public CustomJsonRequest(int method, String url, HashMap<String, String> params,
                              Listener<String> responseListener, ErrorListener errorListener) {
         super(method, url, responseListener,errorListener);
         this.listener = responseListener;
@@ -42,8 +42,8 @@ public class CustomJsonRequest extends StringRequest {
 
 
     @Override
-    public Map<String, String> getParams() throws AuthFailureError {
-        return params;
+    public HashMap<String, String> getParams() throws AuthFailureError {
+        return (HashMap)params;
     }
 
 
