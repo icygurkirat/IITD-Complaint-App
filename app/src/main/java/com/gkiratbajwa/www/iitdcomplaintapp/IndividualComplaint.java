@@ -1,6 +1,7 @@
 package com.gkiratbajwa.www.iitdcomplaintapp;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
@@ -32,8 +33,9 @@ public class IndividualComplaint extends AppCompatActivity {
     RequestQueue mqueue;
     String complaintTo;
     String complaintBy;
-    boolean flag;
     Intent intent;
+    Button button;
+    String id_user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,22 +47,12 @@ public class IndividualComplaint extends AppCompatActivity {
         final WifiManager manager = (WifiManager) super.getSystemService(WIFI_SERVICE);
         final DhcpInfo dhcp = manager.getDhcpInfo();
         String gateway = LoginActivity.intToIp(dhcp.gateway);
+        button = (Button) findViewById(R.id.resolveButton);
         URL = "http://"+gateway +":8000";
         intent = getIntent();
         id = intent.getExtras().getString("id");
-        flag = intent.getExtras().getBoolean("resolve");
-        Button button = (Button) findViewById(R.id.resolveButton);
-        if(!flag)
-        {
-            button.setVisibility(View.INVISIBLE);
-            Toast.makeText(getApplicationContext(), "Invisible", Toast.LENGTH_SHORT).show();
-
-        }
-        else
-        {
-            button.setVisibility(View.VISIBLE);
-            Toast.makeText(getApplicationContext(), "Visible", Toast.LENGTH_SHORT).show();
-        }
+        SharedPreferences userData = getApplication().getSharedPreferences("profileData", MODE_PRIVATE);
+        id_user=Integer.toString(userData.getInt("id",-1));
         showIndividualComplaint();
     }
 
@@ -89,6 +81,10 @@ public class IndividualComplaint extends AppCompatActivity {
                     complaintBy = complaint.getString("user_id");
                     showcomplaintTo();
                     showcomplaintBy();
+                    if((complaint.getString("resolved").equals("1"))||!(complaintTo.equals(id_user)))
+                    {
+                        button.setVisibility(View.INVISIBLE);
+                    }
                     switch(complaint.getString("Complaint_type"))
                     {
                         case "0":
@@ -396,7 +392,6 @@ public class IndividualComplaint extends AppCompatActivity {
                         Toast.makeText(getApplicationContext(), "The complaint has been resolved", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(getApplicationContext(), IndividualComplaint.class);
                         intent.putExtra("id", id);
-                        intent.putExtra("resolve", false);
                         startActivity(intent);
 
                     }
