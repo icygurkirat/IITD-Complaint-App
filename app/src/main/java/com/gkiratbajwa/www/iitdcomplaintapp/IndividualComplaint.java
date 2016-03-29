@@ -40,6 +40,7 @@ public class IndividualComplaint extends AppCompatActivity {
     Button button;
     String id_user;
 
+    // This function gets the main URL of the server
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,7 +61,7 @@ public class IndividualComplaint extends AppCompatActivity {
     }
 
 
-
+    // This function is basically used to populate the details of the complaints
     private void showIndividualComplaint() {
         CustomJsonRequest request = new CustomJsonRequest(URL+"/complaints/complaint.json/"+id,null
                 ,new Response.Listener<String>(){
@@ -122,6 +123,7 @@ public class IndividualComplaint extends AppCompatActivity {
                     {
                         dateResolved.setText(dateResolved.getText()+"\t:\t"+complaint.getString("dateResolved"));
                     }
+                    // To populate the comments of a complaint
                     JSONArray comments =  response.getJSONArray("comments");
                     for(int i=0;i<comments.length();i++){
 
@@ -175,6 +177,7 @@ public class IndividualComplaint extends AppCompatActivity {
         startActivity(intent);
     }
 
+    // this function uses the api to convert the userId to whom the complaint has been sent to the name
     private void showcomplaintTo()
     {
         CustomJsonRequest request = new CustomJsonRequest(URL+"/users/getUser.json/"+complaintTo,null
@@ -211,6 +214,7 @@ public class IndividualComplaint extends AppCompatActivity {
         mqueue.add(request);
     }
 
+    // this function uses the api to convert the userId of the person sending the complaint to the name
     private void showcomplaintBy()
     {
         CustomJsonRequest request = new CustomJsonRequest(URL+"/users/getUser.json/"+complaintBy,null
@@ -247,6 +251,7 @@ public class IndividualComplaint extends AppCompatActivity {
         mqueue.add(request);
     }
 
+    // this function handles adding new comments
     private void sendComment()
     {
         RelativeLayout layout = (RelativeLayout) findViewById(R.id.postComments);
@@ -255,6 +260,7 @@ public class IndividualComplaint extends AppCompatActivity {
         sendButton.setText("SEND");
         RelativeLayout.LayoutParams lay2= new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
         lay2.addRule(RelativeLayout.BELOW, R.id.comText);
+        lay2.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
         sendButton.setLayoutParams(lay2);
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -310,6 +316,7 @@ public class IndividualComplaint extends AppCompatActivity {
 
     }
 
+    // this function handles if the user upvotes a complaint
     public void doUpvote(View view)
     {
         CustomJsonRequest request = new CustomJsonRequest(URL+"/complaints/upvote.json/"+id,null
@@ -355,6 +362,7 @@ public class IndividualComplaint extends AppCompatActivity {
         mqueue.add(request);
     }
 
+    // this function handles if the user downvotes a complaint
     public void doDownvote(View view)
     {
         CustomJsonRequest request = new CustomJsonRequest(URL+"/complaints/downvote.json/"+id,null
@@ -400,6 +408,7 @@ public class IndividualComplaint extends AppCompatActivity {
         mqueue.add(request);
     }
 
+    // this function handles the resolve button
     public void doResolve(View view)
     {
         CustomJsonRequest request = new CustomJsonRequest(URL+"/complaints/resolve.json/"+id,null

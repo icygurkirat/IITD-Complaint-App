@@ -139,6 +139,7 @@ public class SentFragment extends Fragment {
         }
     }
 
+    // this function populates the sent complaints in the fragment
     private void showComplaints1() {
         CustomJsonRequest request = new CustomJsonRequest(URL+"/complaints/get_sent.json"+"/"+user_Id,null
                 ,new Response.Listener<String>(){

@@ -138,6 +138,7 @@ public class ResolvedFragment extends Fragment {
         }
     }
 
+    // this function populates the resolved complaints in the fragment
     private void showComplaints1() {
         CustomJsonRequest request = new CustomJsonRequest(URL+"/complaints/get_resolved.json"+"/"+user_Id,null
                 ,new Response.Listener<String>(){

@@ -137,6 +137,7 @@ public class IncomingFragment extends Fragment {
         }
     }
 
+    // this function populates the incoming complaints in the fragment
     private void showComplaints1() {
         CustomJsonRequest request = new CustomJsonRequest(URL+"/complaints/get_incoming.json"+"/"+user_Id,null
                 ,new Response.Listener<String>(){
